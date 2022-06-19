@@ -93,7 +93,7 @@ set_tribler_watch_folder_config() {
         
     else
         echo "appending" 1>&2
-        $(append_watch_folder_to_tribler_config "$watch_folder_header_identifier" "$enabled_line_two" "$desired_watch_dir_line" "$config_filepath")
+        append_watch_folder_to_tribler_config "$watch_folder_header_identifier" "$enabled_line_two" "$desired_watch_dir_line" "$config_filepath"
     fi
 }
 

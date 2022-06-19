@@ -6,6 +6,9 @@
 # TODO: install git
 # TODO: install wget
 
+# Load installation parameters.
+source install_params.sh
+
 # Load helper scripts
 source configure_tribler.sh
 chmod +x configure_tribler.sh
@@ -18,62 +21,6 @@ chmod +x configure_picard.sh
 source run_tribler_at_boot.sh
 chmod +x run_tribler_at_boot.sh
 
-# Specify configuration parameters.
-repo_name="audio"
-startup_script_dir=~/.config/autostart
-startup_script_path=$startup_script_dir/tribler.desktop
-
-
-# Download dir.
-git_dir=~/git
-dld_dir=~/Downloads/TriblerDownloads/music_blackhole
-
-
-#tribler_music_out_dir=~/Music/Library/Tribler # TODO: make sure Tribler moves towards this directory
-tribler_music_out_dir=~/Downloads/TriblerDownloads # TODO: make sure Tribler moves towards this directory
-target_blackhole=~/Music/Torrentsasdf
-beets_database_dir=~/Music/database
-beets_database_filename="musiclibrary.db"
-tribler_config_root_dir=~/.Tribler
-
-# Tribler configuration lines:
-#watch_folder_header="[watch_folder]"
-watch_folder_header_identifier="watch_folder"
-enabled_line_two="    enabled = True"
-disabled_line_two="    enabled = False"
-watch_dir_line_identifier="    directory = "
-desired_watch_dir_line="    directory = $target_blackhole"
-
-# Download settings.
-download_settings_header_identifier="download_defaults"
-number_hops_identifier="    number_hops = "
-seeding_mode_identifier="    seeding_mode = "
-seeding_ratio_identifier="    seeding_ratio = "
-number_hops='2'
-seeding_mode='ratio'
-seeding_ratio='5.0'
-
-
-# Specify Picard configuration settings.
-picard_config_root_dir=~//snap/picard/
-picard_music_out_dir=~/Music/Library/Picard
-# TODO: find the difference between current and starting dir.
-# TODO: Set to: from tribler_music_out_dir to headphones_music_output_dir
-current_dir_line_identifier="current_directory="
-# TODO: Set to:tribler_music_out_dir headphones_music_output_dir
-starting_dir_line_identifier="starting_directory_path="
-#Set to:picard_music_out_dir
-move_files_to_line_identifier="move_files_to="
-# Set to:true
-move_files_bool_line_identifier="move_files="
-analyse_new_files_line_identifier="analyze_new_files="
-rename_files_line_identifier="rename_files="
-
-# Specify Headphones configuration settings.
-headphones_config_root_dir=~/git/headphones/
-headphones_music_output_dir=~/Music/Library/Headphones # TODO: make sure Tribler moves towards this directory
-headphones_lossless_music_output_dir="$headphones_music_output_dir/lossless"
-
 # Create directories:
 mkdir -p $startup_script_dir
 mkdir -p $git_dir
@@ -85,8 +32,6 @@ mkdir -p $headphones_lossless_music_output_dir
 mkdir -p $target_blackhole
 mkdir -p $beets_database_dir
 
-
-
 # Ensure Tribler runs at boot.
 
 # Make it read input torrents from blackhole.
@@ -97,9 +42,6 @@ set_download_defaults_for_all_tribler_configs "$tribler_config_root_dir" "$downl
 exit 5
 
 
-# Ensure tribler is ran at startup.
-#run_tribler_at_boot_source_install $git_dir
-create_tribler_autostart_entry $git_dir $startup_script_path $repo_name
 
 # Instal Tribler
 #install_tribler_beta_from_deb
@@ -152,8 +94,10 @@ echo "library: $picard_music_out_dir/$beets_database_filename" >> $beet_config_p
 
 
 
-# TODO: Run Tribler in background at boot.
-#tribler/src/tribler.sh  > tribler.log
+# Run Tribler GUI at boot.
+# run_tribler_at_boot_source_install $git_dir # Does not work for GUI application.
+create_tribler_autostart_entry $git_dir $startup_script_path $repo_name
+
 
 # TODO: Run crontab every 30 minutes to import music in background (starting at boot).
 # TODO: include argument to Skip by default to ensure it runs smoothly in background.
