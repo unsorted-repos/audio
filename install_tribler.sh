@@ -5,6 +5,9 @@
 install_tribler_from_source() {
     cd $git_dir
     git clone https://github.com/tribler/tribler
+    cd tribler 
+    git pull
+    cd ..
     conda deactivate
     yes | sudo apt install git libssl-dev libx11-6 libgmp-dev python3 python3-minimal python3-pip python3-libtorrent python3-pyqt5 python3-pyqt5.qtsvg python3-scipy
     pip3 install --upgrade -r tribler/requirements.txt

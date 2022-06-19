@@ -15,11 +15,20 @@ source configure_headphones.sh
 chmod +x configure_headphones.sh
 source configure_picard.sh
 chmod +x configure_picard.sh
+source run_tribler_at_boot.sh
+chmod +x run_tribler_at_boot.sh
 
 # Specify configuration parameters.
+repo_name="audio"
+startup_script_dir=~/.config/autostart
+startup_script_path=$startup_script_dir/tribler.desktop
+
+
 # Download dir.
 git_dir=~/git
 dld_dir=~/Downloads/TriblerDownloads/music_blackhole
+
+
 #tribler_music_out_dir=~/Music/Library/Tribler # TODO: make sure Tribler moves towards this directory
 tribler_music_out_dir=~/Downloads/TriblerDownloads # TODO: make sure Tribler moves towards this directory
 target_blackhole=~/Music/Torrentsasdf
@@ -34,6 +43,16 @@ enabled_line_two="    enabled = True"
 disabled_line_two="    enabled = False"
 watch_dir_line_identifier="    directory = "
 desired_watch_dir_line="    directory = $target_blackhole"
+
+# Download settings.
+download_settings_header_identifier="download_defaults"
+number_hops_identifier="    number_hops = "
+seeding_mode_identifier="    seeding_mode = "
+seeding_ratio_identifier="    seeding_ratio = "
+number_hops='2'
+seeding_mode='ratio'
+seeding_ratio='5.0'
+
 
 # Specify Picard configuration settings.
 picard_config_root_dir=~//snap/picard/
@@ -56,6 +75,7 @@ headphones_music_output_dir=~/Music/Library/Headphones # TODO: make sure Tribler
 headphones_lossless_music_output_dir="$headphones_music_output_dir/lossless"
 
 # Create directories:
+mkdir -p $startup_script_dir
 mkdir -p $git_dir
 mkdir -p $tribler_music_out_dir
 mkdir -p $picard_music_out_dir
@@ -65,13 +85,25 @@ mkdir -p $headphones_lossless_music_output_dir
 mkdir -p $target_blackhole
 mkdir -p $beets_database_dir
 
-# Temporarily configure headphones first
-find_headphones_config_file "$headphones_config_root_dir" "$target_blackhole" "$tribler_music_out_dir" "$headphones_music_output_dir" "$headphones_lossless_music_output_dir"
+
+
+# Ensure Tribler runs at boot.
+
+# Make it read input torrents from blackhole.
+find_tribler_config_file "$tribler_config_root_dir" "$watch_folder_header_identifier" "$enabled_line_two" "$disabled_line_two" "$watch_dir_line_identifier" "$desired_watch_dir_line"
+# Set level of anonymity.
+set_download_defaults_for_all_tribler_configs "$tribler_config_root_dir" "$download_settings_header_identifier" "$number_hops_identifier" "$number_hops" "$seeding_mode_identifier" "$seeding_mode" "$seeding_ratio_identifier" "$seeding_ratio"
+# TODO:Make it output music torrents to music_blackhole
 exit 5
 
 
+# Ensure tribler is ran at startup.
+#run_tribler_at_boot_source_install $git_dir
+create_tribler_autostart_entry $git_dir $startup_script_path $repo_name
+
 # Instal Tribler
-install_tribler_beta_from_deb
+#install_tribler_beta_from_deb
+install_tribler_from_source $git_dir
 
 # Install Beets.
 pip install beets
@@ -87,8 +119,9 @@ git clone git@github.com:rembo10/headphones.git
 # Configure Tribler
 # Make it read input torrents from blackhole.
 find_tribler_config_file "$tribler_config_root_dir" "$watch_folder_header_identifier" "$enabled_line_two" "$disabled_line_two" "$watch_dir_line_identifier" "$desired_watch_dir_line"
+# Set level of anonymity.
+set_download_defaults_for_all_tribler_configs "$tribler_config_root_dir" "$download_settings_header_identifier" "$number_hops_identifier" "$number_hops" "$seeding_mode_identifier" "$seeding_mode" "$seeding_ratio_identifier" "$seeding_ratio"
 # TODO:Make it output music torrents to music_blackhole
-# TODO:Set level of anonymity.
 
 # Configure Headphones
 # TODO: Specify to output torrents to blackhole dir.
