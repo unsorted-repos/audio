@@ -16,6 +16,8 @@ source install_tribler.sh
 chmod +x install_tribler.sh
 source configure_headphones.sh
 chmod +x configure_headphones.sh
+source configure_listenbrainz.sh
+chmod +x configure_listenbrainz.sh
 source configure_picard.sh
 chmod +x configure_picard.sh
 source run_tribler_at_boot.sh
