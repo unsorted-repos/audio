@@ -52,10 +52,10 @@ append_watch_folder_to_tribler_config() {
     desired_watch_dir_line="$3"
     filepath="$4"
 
-    printf \[$watch_folder_header_identifier] | sudo tee -a "$filepath"
-    printf "\n" | sudo tee -a "$filepath"
-    echo "$enabled_line_two" | sudo tee -a "$filepath"
-    echo "$desired_watch_dir_line" | sudo tee -a "$filepath"
+    printf \[$watch_folder_header_identifier] | tee -a "$filepath"
+    printf "\n" | tee -a "$filepath"
+    echo "$enabled_line_two" | tee -a "$filepath"
+    echo "$desired_watch_dir_line" | tee -a "$filepath"
 
     # TODO: assert the file contents is in correctly.
 }
@@ -106,11 +106,11 @@ append_download_settings_to_tribler_config() {
     local seeding_mode="$6"
     local seeding_ratio_identifier="$7"
     local seeding_ratio="$8"
-    printf \[$download_settings_header_identifier] | sudo tee -a "$config_filepath"
-    printf "\n" | sudo tee -a "$config_filepath"
-    echo "$number_hops_identifier$number_hops" | sudo tee -a "$config_filepath"
-    echo "$seeding_mode_identifier$seeding_mode" | sudo tee -a "$config_filepath"
-    echo "$seeding_ratio_identifier$seeding_ratio" | sudo tee -a "$config_filepath"
+    printf \[$download_settings_header_identifier] | tee -a "$config_filepath"
+    printf "\n" | tee -a "$config_filepath"
+    echo "$number_hops_identifier$number_hops" | tee -a "$config_filepath"
+    echo "$seeding_mode_identifier$seeding_mode" | tee -a "$config_filepath"
+    echo "$seeding_ratio_identifier$seeding_ratio" | tee -a "$config_filepath"
 
     # TODO: assert the file contents is in correctly.
 }
