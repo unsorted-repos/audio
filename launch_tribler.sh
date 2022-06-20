@@ -1,6 +1,9 @@
 #!/bin/bash
+
+SCRIPT_DIR="$( cd -- "$( dirname -- "${BASH_SOURCE[0]:-$0}"; )" &> /dev/null && pwd 2> /dev/null; )";
+
 # Load installation parameters.
-source install_params.sh
+source $SCRIPT_DIR/install_params.sh
 
 # Apply configuration.
 # TODO: include arguments to only apply configuration.
