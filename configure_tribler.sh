@@ -196,7 +196,7 @@ find_tribler_config_file(){
     find $tribler_config_root_dir/*/ -type f -name "triblerd.conf" -print0 | while read -d $'\0' file
     do
         echo "file=$file" 1>&2
-        $(set_tribler_watch_folder_config $file "$watch_folder_header_identifier" "$enabled_line_two" "$disabled_line_two" "$watch_dir_line_identifier" "$desired_watch_dir_line")
+        set_tribler_watch_folder_config $file "$watch_folder_header_identifier" "$enabled_line_two" "$disabled_line_two" "$watch_dir_line_identifier" "$desired_watch_dir_line"
     done
 }
 
