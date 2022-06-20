@@ -20,6 +20,8 @@ source configure_picard.sh
 chmod +x configure_picard.sh
 source run_tribler_at_boot.sh
 chmod +x run_tribler_at_boot.sh
+source uninstaller.sh
+chmod +x uninstaller.sh
 
 
 POSITIONAL_ARGS=()
@@ -28,6 +30,7 @@ POSITIONAL_ARGS=()
 config_flag='false'
 install_flag='false'
 run_at_boot_flag='false'
+uninistall_flag='false'
 
 beets_flag='false'
 headphones_flag='false'
@@ -43,6 +46,8 @@ print_usage() {
   printf "\n-c | --config            configure service(s)."
   printf "\n-i | --install           install service(s)."
   printf "\n-r | --runboot           ensure service(s) run at boot.\n"
+  printf "\n-u | --uninstall         uninstall service(s)."
+  
 
   printf "\n-b | --beets             Apply configuration, installation and/or run@boot to Beets."
   printf "\n-h | --headphones        Apply configuration, installation and/or run@boot to Headphones."
@@ -65,9 +70,11 @@ while [[ $# -gt 0 ]]; do
       shift # past argument
       ;;
     -r|--runboot)
-	    # Start by setting the ssh-deploy key to the GitHub build status 
-	    # repository.
       run_at_boot_flag='true'
+      shift # past argument
+      ;;
+    -u|--uninstall)
+	    uninistall_flag='true'
       shift # past argument
       ;;
     -b|--beets)
@@ -103,6 +110,7 @@ set -- "${POSITIONAL_ARGS[@]}" # restore positional parameters
 echo "config_flag                   = ${config_flag}"
 echo "install_flag                    = ${install_flag}"
 echo "run_at_boot_flag                    = ${run_at_boot_flag}"
+echo "uninstall_flag                  = ${uninstall_flag}"
 
 echo "beets_flag                    = ${beets_flag}"
 echo "headphones_flag                   = ${headphones_flag}"
@@ -148,18 +156,30 @@ fi
 if [ "$config_flag" == "true" ]; then
   if [ "$beets_flag" == "true" ]; then
     # Create configuration file.
-    beet config -e
+    #beet config -e > null
+    mkdir -p $beet_config_dir
+    touch $beet_config_dir$beet_config_filename
+    echo "$beets_database_dir$beets_database_filename="
+    touch $beets_database_dir$beets_database_filename
     # Get location of configuration file.
     beet_config_path=$(beet config -p)
+    if [ "$beet_config_path" != "$beet_config_dir$beet_config_filename" ]; then
+      echo "Error, the beets config path is not: $beet_config_dir$beet_config_filename."
+      echo "Instead, it is: $beet_config_path"
+      exit 5
+    fi
     # TODO: assert beet_config_path ends in .yaml
 
     # Option I: OverWrite music target directory into beets config .yaml:
     #echo "directory: $tribler_music_out_dir" > $beet_config_path
     #echo "directory: $picard_music_out_dir" > $beet_config_path
+    # Set directory to which beets outputs the music files:
+    echo "directory: $beets_database_dir" > $beet_config_dir/$beet_config_filename
+    
 
     # Option II: Append library database file location to beets config .yaml:
     #echo "library: $tribler_music_out_dir/$beets_database_filename" >> $beet_config_path
-    echo "library: $picard_music_out_dir/$beets_database_filename" >> $beet_config_path
+    echo "library: $beets_database_dir/$beets_database_filename" >> $beet_config_dir/$beet_config_filename
     
     # TODO: assert Picard config filecontent is correct.
   fi
@@ -185,21 +205,38 @@ if [ "$run_at_boot_flag" == "true" ]; then
     # TODO: Run crontab every 30 minutes to import music in background (starting at boot).
     # TODO: include argument to Skip by default to ensure it runs smoothly in background.
     #beet import $tribler_music_out_dir
-    pass
+    echo ""
   fi
   if [ "$headphones_flag" == "true" ]; then
     # TODO: Run Headpohnes in background at boot.
     #python Headphones.py
     #@reboot cd ~/git/headphones && python Headphones.py
-    pass
+    echo ""
   fi
   if [ "$picard_flag" == "true" ]; then
     # TODO: Run crontab every 30 minutes to import music in background (starting at boot).
     #@reboot picard
-    pass
+    echo ""
   fi
   if [ "$tribler_flag" == "true" ]; then
     # run_tribler_at_boot_source_install $git_dir # Does not work for GUI application.
     create_tribler_autostart_entry $git_dir $startup_script_path $repo_name # with GUI
+  fi
+fi
+
+
+# Uninstall services
+if [ "$uninistall_flag" == "true" ]; then
+  if [ "$beets_flag" == "true" ]; then
+    uninstall_beets
+  fi
+  if [ "$headphones_flag" == "true" ]; then
+    echo ""
+  fi
+  if [ "$picard_flag" == "true" ]; then
+    echo ""
+  fi
+  if [ "$tribler_flag" == "true" ]; then
+    echo ""
   fi
 fi

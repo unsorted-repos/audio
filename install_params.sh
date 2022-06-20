@@ -15,8 +15,11 @@ dld_dir=~/Downloads/TriblerDownloads/music_blackhole
 #tribler_music_out_dir=~/Music/Library/Tribler # TODO: make sure Tribler moves towards this directory
 tribler_music_out_dir=~/Downloads/TriblerDownloads # TODO: make sure Tribler moves towards this directory
 target_blackhole=~/Music/Torrentsasdf
-beets_database_dir=~/Music/database
-beets_database_filename="musiclibrary.db"
+beets_database_dir=~/Music/Library/Beets/
+beets_database_filename="beets.db"
+beet_config_dir="/home/$(whoami)/.config/beets/"
+beet_config_filename="config.yaml"
+
 tribler_config_root_dir=~/.Tribler
 
 # Tribler configuration lines:
