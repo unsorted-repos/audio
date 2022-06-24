@@ -42,31 +42,78 @@ get_listenbrainz_listen_history() {
     pip install calliope-music
     pip install calliope-music[listenbrainz]
     pip install pylistenbrainz
+    pip install cachecontrol
+    pip install spotipy
+    pip install lockfile
 
     cpe listenbrainz-history --user=some_username tracks
 
 }
-get_listenbrainz_listen_history
+#get_listenbrainz_listen_history
+
+
+export_spotify_settings_to_calliope_config() {
+    local spotify_client_id="$1"
+    local spotify_client_secret="$2"
+    local calliope_config_dir="$3"
+    local calliope_config_filename="$4"
+
+    # Create calliope config filepath.
+    local calliope_config_filepath="$calliope_config_dir$calliope_config_filename"
+    
+    # Ensure file exists
+    mkdir -p $calliope_config_dir
+    echo "Made: calliope_config_dir=$calliope_config_dir" 1>&2
+    touch $calliope_config_filepath
+
+    # Write data to file
+    echo "["
+    #printf \["spotify"] | tee -a "$calliope_config_filepath"
+    printf \["spotify"] > "$calliope_config_filepath"
+    printf "\n" | tee -a "$calliope_config_filepath"
+    echo "client-id = $spotify_client_id" | tee -a "$calliope_config_filepath"
+    printf "\n" | tee -a "$calliope_config_filepath"
+    echo "client-secret = $spotify_client_secret" | tee -a "$calliope_config_filepath"
+    printf "\n" | tee -a "$calliope_config_filepath"
+    echo "redirect-uri = http://localhost:8080/" | tee -a "$calliope_config_filepath"
+    printf "\n" | tee -a "$calliope_config_filepath"
+
+}
+
 
 get_spotify_data(){
+    local calliope_config_dir="$1"
+    local calliope_config_filename="$2"
+
     # Source: https://calliope-music.readthedocs.io/en/latest/getting-data/api-keys.html#spotify
     
     echo "Login to the spotify developer account." 1>&2
     xdg-open https://developer.spotify.com/dashboard/applications
+    
+    echo "" 1>&2
     read -p "Enter spotify clientID: " client_id
     read -p "Enter spotify client secret: " client_secret
     
+
+    echo 'Goto Settings>and add:"http://localhost:8080/" to accepted urigs' 1>&2
 
     # TODO: output data to:  $HOME/.config/calliope/calliope.conf
     #[spotify]
     #client-id = 044a880f7e989352f1d243e39648e653
     #client-secret = 54967576893ae3f9c3568a1977016e8d
     #redirect-uri = http://localhost:8080/
+    export_spotify_settings_to_calliope_config "$client_id" "$client_secret" "$calliope_config_dir" "$calliope_config_filename"
     
     # Load client data
     #client_id
     #client_secret
 }
+#get_spotify_data "~/.config/calliope" "calliope.conf"
+get_spotify_data "/home/$(whoami)/.config/calliope/" "calliope.conf"
+
+
+
+
 
 # SKIP: Set up local listenbrainz server:
 # Source: https://github.com/metabrainz/listenbrainz-server
